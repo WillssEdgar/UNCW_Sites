@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
           title: const Text(
-            'UNCW Info App',
+            'Hawks Eye',
             style: TextStyle(color: Colors.black),
           ),
           backgroundColor: Colors.teal[200],

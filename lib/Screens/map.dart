@@ -16,7 +16,7 @@ class _MapState extends State<Map> {
       ),
       body: const Center(
         child: Column(
-          children: [Text("Title of App?")],
+          children: [Text("Hawks Eye")],
         ),
       ),
     );
