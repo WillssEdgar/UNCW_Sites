@@ -1,7 +1,6 @@
 import 'package:csc315_team_edgar_burgess_project/Screens/about.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/map.dart';
 import 'package:flutter/material.dart';
-import 'package:csc315_team_edgar_burgess_project/site_class.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
-  final List<Widget> _screens = [Map(), Profile()];
+  final List<Widget> _screens = [const Map(), const Profile()];
 
   void _onTabTapped(int index) {
     setState(() {

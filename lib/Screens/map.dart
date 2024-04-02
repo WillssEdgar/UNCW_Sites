@@ -20,6 +20,7 @@ class _MapState extends State<Map> {
         itemCount: sites.length,
         itemBuilder: (context, index) {
           return Card(
+            shadowColor: Colors.teal,
             child: ListTile(
               tileColor: Colors.white,
               title: Text(sites[index].name),
@@ -28,7 +29,10 @@ class _MapState extends State<Map> {
                 color: Colors.teal,
               ),
               trailing: IconButton(
-                icon: const Icon(Icons.more_vert),
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: Colors.teal,
+                ),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => _DetailScreen(
