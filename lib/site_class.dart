@@ -22,7 +22,7 @@ class SiteData {
         name: "Congdon Hall",
         description:
             "Building for Congdon School of Supply Chain, Business Analytics, and Information Systems",
-        image: "../asset/images/congdon.jpg"),
+        image: "assets/images/congdon-hall.jpeg"),
     const Site(
         name: "Sartarelli Hall",
         description: "Building for Mathematics",

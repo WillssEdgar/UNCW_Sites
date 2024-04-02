@@ -28,7 +28,7 @@ class _MapState extends State<Map> {
                 color: Colors.teal,
               ),
               trailing: IconButton(
-                icon: Icon(Icons.more_vert),
+                icon: const Icon(Icons.more_vert),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => _DetailScreen(
@@ -53,14 +53,14 @@ class _DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail View"),
+        title: const Text("Detail View"),
       ),
       body: Center(
         child: Column(
           children: [
             Text(" Site Name: ${site.name}"),
             Image.asset(site.image),
-            Text("${site.description}")
+            Text(site.description)
           ],
         ),
       ),
