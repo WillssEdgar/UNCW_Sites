@@ -1,5 +1,5 @@
 import 'package:csc315_team_edgar_burgess_project/Screens/about.dart';
-import 'package:csc315_team_edgar_burgess_project/Screens/map.dart';
+import 'package:csc315_team_edgar_burgess_project/Screens/details_page.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
