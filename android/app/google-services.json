@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "273341162455",
+    "project_id": "term-project-edgar-burgess",
+    "storage_bucket": "term-project-edgar-burgess.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:273341162455:android:839f445b5d3402fc296192",
+        "android_client_info": {
+          "package_name": "com.example.csc315_team_edgar_burgess_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtXx-jiADH_eInVges-_h3axiJh9D5Ij0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

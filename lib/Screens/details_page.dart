@@ -51,7 +51,7 @@ class _MapState extends State<Map> {
 class _DetailScreen extends StatelessWidget {
   final Site site;
 
-  const _DetailScreen({Key? key, required this.site}) : super(key: key);
+  const _DetailScreen({required this.site});
 
   @override
   Widget build(BuildContext context) {
