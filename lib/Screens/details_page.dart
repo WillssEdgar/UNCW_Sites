@@ -10,43 +10,13 @@ class Map extends StatefulWidget {
 }
 
 class _MapState extends State<Map> {
-  List<Site> sites = SiteData().sites;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Home'),
         ),
-        body: SitesList()
-        // ListView.builder(
-        //   itemCount: sites.length,
-        //   itemBuilder: (context, index) {
-        //     return Card(
-        //       shadowColor: Colors.teal,
-        //       child: ListTile(
-        //         tileColor: Colors.white,
-        //         title: Text(sites[index].name),
-        //         leading: const Icon(
-        //           Icons.location_on,
-        //           color: Colors.teal,
-        //         ),
-        //         trailing: IconButton(
-        //           icon: const Icon(
-        //             Icons.play_arrow_rounded,
-        //             color: Colors.teal,
-        //           ),
-        //           onPressed: () {
-        //             Navigator.of(context).push(MaterialPageRoute(
-        //                 builder: (context) => _DetailScreen(
-        //                       site: sites[index],
-        //                     )));
-        //           },
-        //         ),
-        //       ),
-        //     );
-        //   },
-        // ),
-        );
+        body: SitesList());
   }
 }
 
@@ -122,10 +92,7 @@ class SitesList extends StatelessWidget {
               itemCount: docs.length,
               itemBuilder: (context, index) {
                 var doc = docs[index];
-                var site = Site(
-                    name: doc.get('name'),
-                    description: doc.get('description'),
-                    image: doc.get('image'));
+                var site = Site.fromFirestore(doc);
 
                 return Card(
                     child: ListTile(
@@ -135,15 +102,29 @@ class SitesList extends StatelessWidget {
                     Icons.location_on,
                     color: Colors.teal,
                   ),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.play_arrow_rounded,
-                      color: Colors.teal,
-                    ),
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => _DetailScreen(site: site)));
-                    },
+                  trailing: Wrap(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                            site.favorite
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            color: Colors.teal),
+                        onPressed: () {
+                          doc.reference.update({'favorite': !site.favorite});
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: Colors.teal,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => _DetailScreen(site: site)));
+                        },
+                      ),
+                    ],
                   ),
                 ));
               });

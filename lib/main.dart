@@ -40,16 +40,3 @@ class _MainAppState extends State<MainApp> {
     return const FirstScreen();
   }
 }
-
-
-// class MainApp extends StatelessWidget {
-//   const MainApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       title: 'Hawks Eye',
-//       home: LoginScreen(),
-//     );
-//   }
-// }
