@@ -14,38 +14,39 @@ class _MapState extends State<Map> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-      ),
-      body: ListView.builder(
-        itemCount: sites.length,
-        itemBuilder: (context, index) {
-          return Card(
-            shadowColor: Colors.teal,
-            child: ListTile(
-              tileColor: Colors.white,
-              title: Text(sites[index].name),
-              leading: const Icon(
-                Icons.location_on,
-                color: Colors.teal,
-              ),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.play_arrow_rounded,
-                  color: Colors.teal,
-                ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => _DetailScreen(
-                            site: sites[index],
-                          )));
-                },
-              ),
-            ),
-          );
-        },
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('Home'),
+        ),
+        body: SitesList()
+        // ListView.builder(
+        //   itemCount: sites.length,
+        //   itemBuilder: (context, index) {
+        //     return Card(
+        //       shadowColor: Colors.teal,
+        //       child: ListTile(
+        //         tileColor: Colors.white,
+        //         title: Text(sites[index].name),
+        //         leading: const Icon(
+        //           Icons.location_on,
+        //           color: Colors.teal,
+        //         ),
+        //         trailing: IconButton(
+        //           icon: const Icon(
+        //             Icons.play_arrow_rounded,
+        //             color: Colors.teal,
+        //           ),
+        //           onPressed: () {
+        //             Navigator.of(context).push(MaterialPageRoute(
+        //                 builder: (context) => _DetailScreen(
+        //                       site: sites[index],
+        //                     )));
+        //           },
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // ),
+        );
   }
 }
 
@@ -102,20 +103,50 @@ class SitesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<QuerySnapshot>(
         stream: sitesRef.snapshots(),
         builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error fetching data"));
+          }
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Text("No data to show");
+            return const Center(child: Text("No sites available"));
           }
 
-          var sitesDoc = snapshot.data!.docs;
+          var docs = snapshot.data!.docs;
+
           return ListView.builder(
-            itemCount: sitesDoc.length,
-            itemBuilder: ((context, index) => Card(
-                  child: ListTile(title: Text("$sitesDoc[index].get('name')")),
-                )),
-          );
+              itemCount: docs.length,
+              itemBuilder: (context, index) {
+                var doc = docs[index];
+                var site = Site(
+                    name: doc.get('name'),
+                    description: doc.get('description'),
+                    image: doc.get('image'));
+
+                return Card(
+                    child: ListTile(
+                  tileColor: Colors.white,
+                  title: Text(site.name),
+                  leading: const Icon(
+                    Icons.location_on,
+                    color: Colors.teal,
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(
+                      Icons.play_arrow_rounded,
+                      color: Colors.teal,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => _DetailScreen(site: site)));
+                    },
+                  ),
+                ));
+              });
         });
   }
 }
