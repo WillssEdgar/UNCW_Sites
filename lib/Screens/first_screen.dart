@@ -2,7 +2,6 @@ import 'dart:ui'; // Import this for ImageFilter
 import 'package:flutter/material.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/login_screen.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/sign_up_screen.dart';
-import 'package:flutter/widgets.dart';
 
 class FirstScreen extends StatelessWidget {
   const FirstScreen({

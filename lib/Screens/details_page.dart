@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc315_team_edgar_burgess_project/site_class.dart';
 import 'package:flutter/material.dart';
 
@@ -91,5 +92,30 @@ class _DetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SitesList extends StatelessWidget {
+  SitesList({super.key});
+
+  final sitesRef = FirebaseFirestore.instance.collection('Sites');
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: sitesRef.snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Text("No data to show");
+          }
+
+          var sitesDoc = snapshot.data!.docs;
+          return ListView.builder(
+            itemCount: sitesDoc.length,
+            itemBuilder: ((context, index) => Card(
+                  child: ListTile(title: Text("$sitesDoc[index].get('name')")),
+                )),
+          );
+        });
   }
 }
