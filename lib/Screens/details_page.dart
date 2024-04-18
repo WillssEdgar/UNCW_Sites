@@ -1,22 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc315_team_edgar_burgess_project/site_class.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Map extends StatefulWidget {
-  const Map({super.key});
+class ListOfSites extends StatefulWidget {
+  const ListOfSites({super.key});
 
   @override
-  State<Map> createState() => _MapState();
+  State<ListOfSites> createState() => _ListOfSitesState();
 }
 
-class _MapState extends State<Map> {
+class _ListOfSitesState extends State<ListOfSites> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Home'),
-        ),
-        body: SitesList());
+    return Scaffold(body: SitesList());
   }
 }
 
@@ -66,10 +63,84 @@ class _DetailScreen extends StatelessWidget {
   }
 }
 
-class SitesList extends StatelessWidget {
-  SitesList({super.key});
+class SitesList extends StatefulWidget {
+  const SitesList({super.key});
 
+  @override
+  _SitesListState createState() => _SitesListState();
+}
+
+class _SitesListState extends State<SitesList> {
   final sitesRef = FirebaseFirestore.instance.collection('Sites');
+
+  late String userID;
+  late Map<String, bool> _favoriteSites = {};
+
+  @override
+  void initState() {
+    super.initState();
+    userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    _initializeFavoriteSites();
+  }
+
+  final nameToNumber = {
+    "Trask Coliseum": 1,
+    "Kenan Auditorium": 2,
+    "Fisher University Union": 3,
+    "Congdon Hall": 4,
+    "Sartarelli Hall": 5,
+    "Randall Library": 6
+  };
+
+  void _initializeFavoriteSites() async {
+    final favoriteSites = <String, bool>{};
+
+    for (var siteName in nameToNumber.keys) {
+      await _loadFavoriteSites(siteName, favoriteSites);
+    }
+
+    setState(() {
+      _favoriteSites = favoriteSites;
+    });
+  }
+
+  Future<void> _loadFavoriteSites(
+      String siteName, Map<String, bool> favoriteSites) async {
+    int? siteNumber = nameToNumber[siteName];
+
+    DocumentSnapshot snapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userID).get();
+    Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
+
+    bool isFavorite = false;
+
+    if (userData != null && userData.containsKey('favoriteSites')) {
+      Map<String, dynamic> userDataInfo = userData['favoriteSites'];
+      isFavorite = userDataInfo[siteNumber.toString()] ?? false;
+    }
+
+    favoriteSites[siteName] = isFavorite;
+  }
+
+  Future<void> updateFavoriteMap(String nameOfSite, bool value) async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+    int? siteNumber;
+
+    nameToNumber.forEach((name, number) {
+      if (name == nameOfSite) {
+        siteNumber = number;
+      }
+    });
+
+    if (siteNumber != null) {
+      await userRef.update({
+        'favoriteSites.$siteNumber': value,
+      });
+    } else {
+      print('Site Number not found');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,38 +166,46 @@ class SitesList extends StatelessWidget {
                 var site = Site.fromFirestore(doc);
 
                 return Card(
-                    child: ListTile(
-                  tileColor: Colors.white,
-                  title: Text(site.name),
-                  leading: const Icon(
-                    Icons.location_on,
-                    color: Colors.teal,
-                  ),
-                  trailing: Wrap(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                            site.favorite
+                  child: ListTile(
+                    tileColor: Colors.white,
+                    title: Text(site.name),
+                    leading: const Icon(
+                      Icons.location_on,
+                      color: Colors.teal,
+                    ),
+                    trailing: Wrap(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            _favoriteSites[site.name] ?? false
                                 ? Icons.favorite
                                 : Icons.favorite_border,
-                            color: Colors.teal),
-                        onPressed: () {
-                          doc.reference.update({'favorite': !site.favorite});
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: Colors.teal,
+                            color: Colors.teal,
+                          ),
+                          onPressed: () {
+                            doc.reference.update({'favorite': !site.favorite});
+
+                            updateFavoriteMap(
+                                site.name, !_favoriteSites[site.name]!);
+                            _favoriteSites[site.name] =
+                                !_favoriteSites[site.name]!;
+                          },
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => _DetailScreen(site: site)));
-                        },
-                      ),
-                    ],
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.teal,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => _DetailScreen(site: site),
+                            ));
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ));
+                );
               });
         });
   }

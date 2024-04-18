@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? confirmPassword;
   String? error;
   final _formKey = GlobalKey<FormState>();
+
+  Future<void> addUserToFirestore(String email, String userID,
+      {Map<String, bool> favoriteSites = const {
+        '1': false,
+        '2': false,
+        '3': false,
+        '4': false,
+        '5': false,
+        '6': false,
+      }}) async {
+    final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
+
+    // Create or update the user document with basic info
+    await userRef.set({
+      'email': email,
+      'userID': userID,
+      'favoriteSites': favoriteSites,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +168,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // We need this next check to use the Navigator in an async method.
       // It basically makes sure LoginScreen is still visible.
       if (!mounted) return;
+
+      addUserToFirestore(email!, FirebaseAuth.instance.currentUser!.uid);
 
       // pop the navigation stack so people cannot "go back" to the login screen
       // after logging in.

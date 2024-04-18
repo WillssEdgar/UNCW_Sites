@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runApp(const MaterialApp(title: "Hawk Eye", home: MainApp()));
+  runApp(const MaterialApp(title: "Hawks Eye", home: MainApp()));
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
