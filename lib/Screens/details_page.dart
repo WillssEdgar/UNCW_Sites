@@ -13,7 +13,7 @@ class ListOfSites extends StatefulWidget {
 class _ListOfSitesState extends State<ListOfSites> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SitesList());
+    return const Scaffold(body: SitesList());
   }
 }
 
@@ -137,8 +137,6 @@ class _SitesListState extends State<SitesList> {
       await userRef.update({
         'favoriteSites.$siteNumber': value,
       });
-    } else {
-      print('Site Number not found');
     }
   }
 
