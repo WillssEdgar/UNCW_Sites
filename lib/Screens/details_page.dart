@@ -13,14 +13,15 @@ class ListOfSites extends StatefulWidget {
 class _ListOfSitesState extends State<ListOfSites> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SitesList());
+    return const Scaffold(body: SitesList());
   }
 }
 
 class _DetailScreen extends StatelessWidget {
   final Site site;
+  final bool value;
 
-  const _DetailScreen({required this.site});
+  const _DetailScreen({required this.site, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,14 @@ class _DetailScreen extends StatelessWidget {
             'Hawks Eye',
             style: TextStyle(color: Colors.black),
           ),
+          actions: [
+            Icon(
+              value ? Icons.favorite : Icons.favorite_border,
+            ),
+            const SizedBox(
+              width: 10,
+            )
+          ],
           backgroundColor: Colors.teal[200],
           centerTitle: true),
       body: SingleChildScrollView(
@@ -67,7 +76,9 @@ class SitesList extends StatefulWidget {
   const SitesList({super.key});
 
   @override
-  _SitesListState createState() => _SitesListState();
+  State<SitesList> createState() {
+    return _SitesListState();
+  }
 }
 
 class _SitesListState extends State<SitesList> {
@@ -137,8 +148,6 @@ class _SitesListState extends State<SitesList> {
       await userRef.update({
         'favoriteSites.$siteNumber': value,
       });
-    } else {
-      print('Site Number not found');
     }
   }
 
@@ -198,7 +207,9 @@ class _SitesListState extends State<SitesList> {
                           ),
                           onPressed: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => _DetailScreen(site: site),
+                              builder: (context) => _DetailScreen(
+                                  site: site,
+                                  value: _favoriteSites[site.name]!),
                             ));
                           },
                         ),
