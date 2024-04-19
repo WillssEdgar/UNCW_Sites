@@ -34,72 +34,70 @@ class FirstScreen extends StatelessWidget {
                         .withOpacity(0.5), // Adjust opacity of the blue color
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(55),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: const Text(
-                            "Welcome to Hawks Eye",
-                            style: TextStyle(fontSize: 30),
-                            textAlign: TextAlign.center,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: const Text(
+                          "Welcome to Hawks Eye",
+                          style: TextStyle(fontSize: 30),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 50,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(5),
+                              minimumSize: MaterialStateProperty.all(
+                                  const Size(200, 40)),
+                            ),
+                            child: const Text(
+                              "Login",
+                              style:
+                                  TextStyle(color: Colors.teal, fontSize: 20),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ));
+                            },
                           ),
-                        ),
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                elevation: MaterialStateProperty.all(5),
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(200, 40)),
-                              ),
-                              child: const Text(
-                                "Login",
-                                style:
-                                    TextStyle(color: Colors.teal, fontSize: 20),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const LoginScreen(),
-                                ));
-                              },
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(5),
+                              minimumSize: MaterialStateProperty.all(
+                                  const Size(200, 40)),
                             ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                elevation: MaterialStateProperty.all(5),
-                                minimumSize: MaterialStateProperty.all(
-                                    const Size(200, 40)),
-                              ),
-                              child: const Text(
-                                "Sign Up",
-                                style:
-                                    TextStyle(color: Colors.teal, fontSize: 20),
-                              ),
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const SignUpScreen(),
-                                ));
-                              },
+                            child: const Text(
+                              "Sign Up",
+                              style:
+                                  TextStyle(color: Colors.teal, fontSize: 20),
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const SignUpScreen(),
+                              ));
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
