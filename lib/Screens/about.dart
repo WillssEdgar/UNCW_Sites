@@ -15,6 +15,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Column(
