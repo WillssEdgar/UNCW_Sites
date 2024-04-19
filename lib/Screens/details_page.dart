@@ -13,7 +13,7 @@ class ListOfSites extends StatefulWidget {
 class _ListOfSitesState extends State<ListOfSites> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: SitesList());
+    return const SitesList();
   }
 }
 
