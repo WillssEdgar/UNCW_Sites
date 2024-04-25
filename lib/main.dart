@@ -1,6 +1,6 @@
 //import 'package:csc315_team_edgar_burgess_project/Screens/home.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/first_screen.dart';
-import 'package:csc315_team_edgar_burgess_project/Screens/home.dart';
+import 'package:csc315_team_edgar_burgess_project/Screens/nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
