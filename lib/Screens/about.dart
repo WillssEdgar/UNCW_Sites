@@ -123,14 +123,18 @@ class _ProfileState extends State<Profile> {
                                       )));
                         },
                         child: Card(
-                          elevation: 3,
+                          elevation: 4,
+                          margin: const EdgeInsets.all(3),
                           child: Column(
                             children: [
                               SizedBox(
                                 height: 65,
                                 child: ListTile(
                                   tileColor: Colors.white,
-                                  title: Text(site.name),
+                                  title: Text(
+                                    site.name,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
                                   leading: const Icon(
                                     Icons.location_on,
                                     color: Colors.teal,
@@ -139,7 +143,7 @@ class _ProfileState extends State<Profile> {
                               ),
                               Container(
                                 width: 300,
-                                height: 172,
+                                height: 104,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10.0),
                                 ),
