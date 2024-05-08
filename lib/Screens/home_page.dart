@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/details_screen.dart';
 import 'package:csc315_team_edgar_burgess_project/site_class.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class ListOfSites extends StatefulWidget {
@@ -38,6 +39,24 @@ class _SitesListState extends State<SitesList> {
 
   late String userID;
   late Map<String, bool> _favoriteSites = {};
+
+  Future<String?> getImageUrl(String imageId) async {
+    try {
+      // Reference to the image in Firebase Storage
+      Reference imageRef =
+          FirebaseStorage.instance.ref().child('site_pictures/$imageId');
+
+      // Get the download URL for the image
+      String imageUrl = await imageRef.getDownloadURL();
+
+      // Return the image URL
+      return imageUrl;
+    } catch (e) {
+      // Handle errors, such as if the image doesn't exist
+      print('Error getting image URL: $e');
+      return null;
+    }
+  }
 
   @override
   void initState() {
@@ -173,7 +192,25 @@ class _SitesListState extends State<SitesList> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-                        child: Image.asset(site.image),
+                        child: FutureBuilder<String?>(
+                          future: getImageUrl(site.image),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                  child: Text("Error: ${snapshot.error}"));
+                            }
+                            if (!snapshot.hasData || snapshot.data == null) {
+                              return const Center(
+                                  child: Text("No image available"));
+                            }
+                            return Image.network(snapshot.data!);
+                          },
+                        ),
                       )
                     ],
                   ),
