@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,15 @@ class AddSite extends StatefulWidget {
 
 class _AddSiteState extends State<AddSite> {
   String? locationName;
+  String? locationDescription;
   MapController mapController = MapController();
   List<Marker> markers = [];
   String? imageFile;
+  final userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+  late LatLng location;
+
   var storageRef = FirebaseStorage.instance.ref();
+
   bool showMap = false;
 
   void _handleTap(LatLng latlng) {
@@ -43,6 +49,72 @@ class _AddSiteState extends State<AddSite> {
         ),
       );
     });
+  }
+
+  void _submitbutton() async {
+    CollectionReference sitesRef =
+        FirebaseFirestore.instance.collection('Sites');
+    CollectionReference userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userID)
+        .collection('Sites');
+    try {
+      if (imageFile != null) {
+        // Upload the image file.
+        File image = File(imageFile!);
+        String fileName = image.path.split('/').last;
+        Reference storageReference =
+            FirebaseStorage.instance.ref().child('site_pictures/$fileName');
+        UploadTask uploadTask = storageReference.putFile(image);
+        await uploadTask.whenComplete(() => null);
+
+        sitesRef.add({
+          'description': locationDescription,
+          'location': GeoPoint(location.latitude, location.longitude),
+          'image': fileName,
+          'name': locationName,
+        });
+        userRef.add({
+          'site_name': locationName,
+          'location': GeoPoint(location.latitude, location.longitude),
+          'location_description': locationDescription,
+          'image': fileName,
+        });
+
+        setState(() {
+          // Reset form fields
+          locationName = null;
+          locationDescription = null;
+          imageFile = null;
+
+          // Clear markers
+          markers.clear();
+
+          // Reset map controller
+          mapController.move(const LatLng(0, 0), 0);
+
+          // Reset showMap flag
+          showMap = false;
+        });
+      } else {
+        // If imageFile is null, display an error message or handle it accordingly
+        print("Please select an image before submitting.");
+      }
+    } catch (err) {
+      // Handle any errors that occur during the upload process
+      print("Failed to upload image: $err");
+    }
+  }
+
+  _getImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedImage = await picker.pickImage(source: source);
+
+    if (pickedImage != null) {
+      setState(() {
+        imageFile = pickedImage.path;
+      });
+    }
   }
 
   @override
@@ -93,7 +165,7 @@ class _AddSiteState extends State<AddSite> {
                           initialZoom: 15,
                           onTap: (tapPosition, point) {
                             _handleTap(point);
-                            print("This is the point" + point.toString());
+                            location = point;
                           },
                         ),
                         children: [
@@ -148,6 +220,25 @@ class _AddSiteState extends State<AddSite> {
                   const SizedBox(
                     height: 30,
                   ),
+                  SizedBox(
+                    height: 70,
+                    child: TextFormField(
+                      decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.description),
+                          border: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.black, width: 1)),
+                          labelText: 'Please Give the Location a Description.',
+                          hintText: 'Example: It is a beautiful Place.'),
+                      onChanged: (value) => locationDescription = value,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter some text';
+                        }
+                        return null; // Returning null means "no issues"
+                      },
+                    ),
+                  ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -193,9 +284,27 @@ class _AddSiteState extends State<AddSite> {
                     SizedBox(
                       height: 300,
                       width: 200,
-                      child: Image.network(imageFile!, width: 250),
+                      child: Image.file(File(imageFile!), width: 250),
                     ),
-                  }
+                  },
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          minimumSize: MaterialStateProperty.all<Size>(
+                              const Size(125, 40)),
+                          elevation: MaterialStateProperty.all<double?>(3),
+                        ),
+                        onPressed: () {
+                          _submitbutton();
+                        },
+                        child: const Text(
+                          "Submit Site",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -203,45 +312,5 @@ class _AddSiteState extends State<AddSite> {
         ],
       ),
     );
-  }
-
-  _getImage(ImageSource source) async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: source);
-
-    if (image != null) {
-      print(image.path);
-
-      // Goal: rename the file used for the profile picture to be the
-      // logged-in user's FirebaseAuth unique ID (uid)
-
-      // Extract the image file extension.
-      String fileExtension = '';
-      int period = image.path.lastIndexOf('.');
-      if (period > -1) {
-        fileExtension = image.path.substring(period);
-      }
-
-      // Specify the bucket location so that it will be something like
-      // '<ourBucket>/profilepics/Zasow3qeh1109dhalased.jpg'
-      final profileImgRef = storageRef.child(
-          "site_pictures/${FirebaseAuth.instance.currentUser!.uid}$fileExtension");
-
-      try {
-        // Upload the image file.
-        await profileImgRef.putFile(File(image.path));
-
-        // Get a public URL that we can download the image from
-        imageFile = await profileImgRef.getDownloadURL();
-        setState(() {
-          // We should provide some feedback to the user here.
-          print("File saved successfully!");
-        });
-      } on FirebaseException catch (err) {
-        // Caught an exception from Firebase because I'm not on the net,
-        // or I don't have permission
-        print("Failed with error ${err.code}: ${err.message}");
-      }
-    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:csc315_team_edgar_burgess_project/Screens/details_screen.dart';
 import 'package:csc315_team_edgar_burgess_project/Screens/first_screen.dart';
 import 'package:csc315_team_edgar_burgess_project/site_class.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -17,6 +18,25 @@ class _ProfileState extends State<Profile> {
   final sitesRef = FirebaseFirestore.instance.collection('Sites');
   final userRef = FirebaseFirestore.instance.collection('users');
   final userID = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  Future<String?> getImageUrl(String imageId) async {
+    try {
+      // Reference to the image in Firebase Storage
+      Reference imageRef =
+          FirebaseStorage.instance.ref().child('site_pictures/$imageId');
+
+      // Get the download URL for the image
+      String imageUrl = await imageRef.getDownloadURL();
+
+      // Return the image URL
+      return imageUrl;
+    } catch (e) {
+      // Handle errors, such as if the image doesn't exist
+      print('Error getting image URL: $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +130,7 @@ class _ProfileState extends State<Profile> {
                   itemBuilder: (context, index) {
                     var doc = docs[index];
                     var site = Site.fromFirestore(doc);
+
                     return MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: GestureDetector(
@@ -152,10 +173,31 @@ class _ProfileState extends State<Profile> {
                                     bottomLeft: Radius.circular(10.0),
                                     bottomRight: Radius.circular(10.0),
                                   ),
-                                  child: Image.asset(
-                                    site.image,
-                                    fit: BoxFit.cover,
+                                  child: FutureBuilder<String?>(
+                                    future: getImageUrl(site.image),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      }
+                                      if (snapshot.hasError) {
+                                        return Center(
+                                            child: Text(
+                                                "Error: ${snapshot.error}"));
+                                      }
+                                      if (!snapshot.hasData ||
+                                          snapshot.data == null) {
+                                        return const Center(
+                                            child: Text("No image available"));
+                                      }
+                                      return Image.network(snapshot.data!);
+                                    },
                                   ),
+                                  // child: Image.asset(
+                                  //   site.image,
+                                  //   fit: BoxFit.cover,
+                                  // ),
                                 ),
                               ),
                             ],
