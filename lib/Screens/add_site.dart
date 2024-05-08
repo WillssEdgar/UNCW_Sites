@@ -98,11 +98,11 @@ class _AddSiteState extends State<AddSite> {
         });
       } else {
         // If imageFile is null, display an error message or handle it accordingly
-        print("Please select an image before submitting.");
+        const Text("Please select an image before submitting.");
       }
     } catch (err) {
       // Handle any errors that occur during the upload process
-      print("Failed to upload image: $err");
+      Text("Failed to upload image: $err");
     }
   }
 
@@ -187,7 +187,7 @@ class _AddSiteState extends State<AddSite> {
                       elevation: MaterialStateProperty.all<double?>(3),
                     ),
                     onPressed: () {
-                      print("hello");
+                      const Text("hello");
                     },
                     child: const Text(
                       "Use Current Location",

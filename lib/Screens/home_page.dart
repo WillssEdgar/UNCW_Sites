@@ -53,7 +53,7 @@ class _SitesListState extends State<SitesList> {
       return imageUrl;
     } catch (e) {
       // Handle errors, such as if the image doesn't exist
-      print('Error getting image URL: $e');
+      Text('Error getting image URL: $e');
       return null;
     }
   }
@@ -181,9 +181,8 @@ class _SitesListState extends State<SitesList> {
                               ),
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => DetailScreen(
-                                      site: site,
-                                      value: _favoriteSites[site.name]!),
+                                  builder: (context) =>
+                                      DetailScreen(site: site, value: true),
                                 ));
                               },
                             ),

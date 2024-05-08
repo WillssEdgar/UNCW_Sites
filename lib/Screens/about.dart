@@ -31,7 +31,7 @@ class _ProfileState extends State<Profile> {
       return imageUrl;
     } catch (e) {
       // Handle errors, such as if the image doesn't exist
-      print('Error getting image URL: $e');
+      Text('Error getting image URL: $e');
       return null;
     }
   }
