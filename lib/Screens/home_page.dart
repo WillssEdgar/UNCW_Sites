@@ -16,7 +16,7 @@ class _ListOfSitesState extends State<ListOfSites> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hawks Eye"),
+        title: const Text("Hawks Eye"),
         backgroundColor: Colors.teal,
       ),
       body: const SitesList(),
@@ -127,46 +127,55 @@ class _SitesListState extends State<SitesList> {
                 var site = Site.fromFirestore(doc);
 
                 return Card(
-                  child: ListTile(
-                    tileColor: Colors.white,
-                    title: Text(site.name),
-                    leading: const Icon(
-                      Icons.location_on,
-                      color: Colors.teal,
-                    ),
-                    trailing: Wrap(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            _favoriteSites[site.name] ?? false
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: Colors.teal,
-                          ),
-                          onPressed: () {
-                            doc.reference.update({'favorite': !site.favorite});
+                  child: Column(
+                    children: [
+                      ListTile(
+                        tileColor: Colors.white,
+                        title: Text(site.name),
+                        leading: const Icon(
+                          Icons.location_on,
+                          color: Colors.teal,
+                        ),
+                        trailing: Wrap(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                _favoriteSites[site.name] ?? false
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: Colors.teal,
+                              ),
+                              onPressed: () {
+                                doc.reference
+                                    .update({'favorite': !site.favorite});
 
-                            updateFavoriteMap(
-                                site.name, !_favoriteSites[site.name]!);
-                            _favoriteSites[site.name] =
-                                !_favoriteSites[site.name]!;
-                          },
+                                updateFavoriteMap(
+                                    site.name, !_favoriteSites[site.name]!);
+                                _favoriteSites[site.name] =
+                                    !_favoriteSites[site.name]!;
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.teal,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DetailScreen(
+                                      site: site,
+                                      value: _favoriteSites[site.name]!),
+                                ));
+                              },
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.arrow_forward_ios_rounded,
-                            color: Colors.teal,
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => DetailScreen(
-                                  site: site,
-                                  value: _favoriteSites[site.name]!),
-                            ));
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                        child: Image.asset(site.image),
+                      )
+                    ],
                   ),
                 );
               });

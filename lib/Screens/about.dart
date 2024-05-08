@@ -5,10 +5,9 @@ import 'package:csc315_team_edgar_burgess_project/site_class.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key});
+  const Profile({super.key});
 
   @override
   State<Profile> createState() => _ProfileState();
@@ -82,7 +81,7 @@ class _ProfileState extends State<Profile> {
                   snapshot.data!.docs.first.data() as Map<String, dynamic>;
 
               return Padding(
-                  padding: EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Row(
                     children: [
                       const Icon(

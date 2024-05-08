@@ -5,7 +5,7 @@ class DetailScreen extends StatelessWidget {
   final Site site;
   final bool value;
 
-  const DetailScreen({required this.site, required this.value});
+  const DetailScreen({super.key, required this.site, required this.value});
 
   @override
   Widget build(BuildContext context) {
