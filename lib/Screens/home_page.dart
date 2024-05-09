@@ -143,15 +143,13 @@ class _SitesListState extends State<SitesList> {
                                 color: Colors.teal,
                               ),
                               onPressed: () {
-                                if (favorites.contains(site.name)) {
-                                  setState(() {
+                                setState(() {
+                                  if (favorites.contains(site.name)) {
                                     favorites.remove(site.name);
-                                  });
-                                } else {
-                                  setState(() {
+                                  } else {
                                     favorites.add(site.name);
-                                  });
-                                }
+                                  }
+                                });
 
                                 // Update favorites in Firestore
                                 FirebaseFirestore.instance
@@ -171,8 +169,9 @@ class _SitesListState extends State<SitesList> {
                               ),
                               onPressed: () {
                                 Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailScreen(site: site, value: true),
+                                  builder: (context) => DetailScreen(
+                                      site: site,
+                                      value: favorites.contains(site.name)),
                                 ));
                               },
                             ),
