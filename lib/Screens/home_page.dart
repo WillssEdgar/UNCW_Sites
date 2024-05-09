@@ -38,7 +38,41 @@ class _SitesListState extends State<SitesList> {
   final sitesRef = FirebaseFirestore.instance.collection('Sites');
 
   late String userID;
-  late Map<String, bool> _favoriteSites = {};
+
+  List<String> favorites = [];
+
+  Future<void> _populateFavorites() async {
+    try {
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .get();
+
+      // Check if the user document exists
+      if (userSnapshot.exists) {
+        // Retrieve the array field 'arrayField' from the user document
+        List<dynamic> arrayField = userSnapshot.data()!['favorites'];
+
+        // Clear the existing favorites list before populating
+        setState(() {
+          favorites.clear();
+        });
+
+        // Add each element of the arrayField to the favorites list
+        for (var element in arrayField) {
+          setState(() {
+            favorites.add(element);
+          });
+        }
+      } else {
+        // User document with userID doesn't exist
+        print('User document not found');
+      }
+    } catch (e) {
+      // Error occurred during fetching data
+      print('Error fetching user document: $e');
+    }
+  }
 
   Future<String?> getImageUrl(String imageId) async {
     try {
@@ -62,64 +96,7 @@ class _SitesListState extends State<SitesList> {
   void initState() {
     super.initState();
     userID = FirebaseAuth.instance.currentUser?.uid ?? '';
-
-    _initializeFavoriteSites();
-  }
-
-  final nameToNumber = {
-    "Trask Coliseum": 1,
-    "Kenan Auditorium": 2,
-    "Fisher University Union": 3,
-    "Congdon Hall": 4,
-    "Sartarelli Hall": 5,
-    "Randall Library": 6
-  };
-
-  void _initializeFavoriteSites() async {
-    final favoriteSites = <String, bool>{};
-
-    for (var siteName in nameToNumber.keys) {
-      await _loadFavoriteSites(siteName, favoriteSites);
-    }
-
-    setState(() {
-      _favoriteSites = favoriteSites;
-    });
-  }
-
-  Future<void> _loadFavoriteSites(
-      String siteName, Map<String, bool> favoriteSites) async {
-    int? siteNumber = nameToNumber[siteName];
-
-    DocumentSnapshot snapshot =
-        await FirebaseFirestore.instance.collection('users').doc(userID).get();
-    Map<String, dynamic>? userData = snapshot.data() as Map<String, dynamic>?;
-
-    bool isFavorite = false;
-
-    if (userData != null && userData.containsKey('favoriteSites')) {
-      Map<String, dynamic> userDataInfo = userData['favoriteSites'];
-      isFavorite = userDataInfo[siteNumber.toString()] ?? false;
-    }
-
-    favoriteSites[siteName] = isFavorite;
-  }
-
-  Future<void> updateFavoriteMap(String nameOfSite, bool value) async {
-    final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
-    int? siteNumber;
-
-    nameToNumber.forEach((name, number) {
-      if (name == nameOfSite) {
-        siteNumber = number;
-      }
-    });
-
-    if (siteNumber != null) {
-      await userRef.update({
-        'favoriteSites.$siteNumber': value,
-      });
-    }
+    _populateFavorites();
   }
 
   @override
@@ -159,19 +136,32 @@ class _SitesListState extends State<SitesList> {
                           children: [
                             IconButton(
                               icon: Icon(
-                                _favoriteSites[site.name] ?? false
+                                // _favoriteSites[site.name] ?? false
+                                favorites.contains(site.name)
                                     ? Icons.favorite
                                     : Icons.favorite_border,
                                 color: Colors.teal,
                               ),
                               onPressed: () {
-                                doc.reference
-                                    .update({'favorite': !site.favorite});
+                                if (favorites.contains(site.name)) {
+                                  setState(() {
+                                    favorites.remove(site.name);
+                                  });
+                                } else {
+                                  setState(() {
+                                    favorites.add(site.name);
+                                  });
+                                }
 
-                                updateFavoriteMap(
-                                    site.name, !_favoriteSites[site.name]!);
-                                _favoriteSites[site.name] =
-                                    !_favoriteSites[site.name]!;
+                                // Update favorites in Firestore
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(userID)
+                                    .update({'favorites': favorites}).then((_) {
+                                  print('Favorites updated successfully');
+                                }).catchError((error) {
+                                  print('Failed to update favorites: $error');
+                                });
                               },
                             ),
                             IconButton(

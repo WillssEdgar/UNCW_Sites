@@ -23,15 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future<void> addUserToFirestore(String firstName, String lastName,
-      String email, String username, String userID,
-      {Map<String, bool> favoriteSites = const {
-        '1': false,
-        '2': false,
-        '3': false,
-        '4': false,
-        '5': false,
-        '6': false,
-      }}) async {
+      String email, String username, String userID) async {
     final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
 
     // Create or update the user document with basic info
@@ -41,7 +33,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       'email': email,
       'username': username,
       'userID': userID,
-      'favoriteSites': favoriteSites,
+      'favorites': [],
     });
   }
 
