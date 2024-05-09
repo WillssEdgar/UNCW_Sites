@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:csc315_team_edgar_burgess_project/Screens/home.dart';
+import 'package:csc315_team_edgar_burgess_project/Screens/nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -13,28 +13,27 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  String? firstName;
+  String? lastName;
   String? email;
+  String? username;
   String? password;
   String? confirmPassword;
   String? error;
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> addUserToFirestore(String email, String userID,
-      {Map<String, bool> favoriteSites = const {
-        '1': false,
-        '2': false,
-        '3': false,
-        '4': false,
-        '5': false,
-        '6': false,
-      }}) async {
+  Future<void> addUserToFirestore(String firstName, String lastName,
+      String email, String username, String userID) async {
     final userRef = FirebaseFirestore.instance.collection('users').doc(userID);
 
     // Create or update the user document with basic info
     await userRef.set({
+      'firstName': firstName,
+      'lastName': lastName,
       'email': email,
+      'username': username,
       'userID': userID,
-      'favoriteSites': favoriteSites,
+      'favorites': [],
     });
   }
 
@@ -52,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(55, 110, 55, 110),
+              padding: const EdgeInsets.fromLTRB(55, 10, 55, 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
@@ -80,9 +79,40 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             TextFormField(
                                 decoration: const InputDecoration(
+                                    hintText: 'Enter your First Name'),
+                                onChanged: (value) => firstName = value,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some text';
+                                  }
+                                  return null; // Returning null means "no issues"
+                                }),
+                            TextFormField(
+                                decoration: const InputDecoration(
+                                    hintText: 'Enter your Last Name'),
+                                onChanged: (value) => lastName = value,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some text';
+                                  }
+                                  return null; // Returning null means "no issues"
+                                }),
+                            TextFormField(
+                                decoration: const InputDecoration(
                                     hintText: 'Enter your email'),
                                 maxLength: 64,
                                 onChanged: (value) => email = value,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter some text';
+                                  }
+                                  return null; // Returning null means "no issues"
+                                }),
+                            TextFormField(
+                                decoration: const InputDecoration(
+                                    hintText: 'Enter your username'),
+                                maxLength: 15,
+                                onChanged: (value) => username = value,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter some text';
@@ -169,7 +199,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // It basically makes sure LoginScreen is still visible.
       if (!mounted) return;
 
-      addUserToFirestore(email!, FirebaseAuth.instance.currentUser!.uid);
+      addUserToFirestore(firstName!, lastName!, email!, username!,
+          FirebaseAuth.instance.currentUser!.uid);
 
       // pop the navigation stack so people cannot "go back" to the login screen
       // after logging in.
