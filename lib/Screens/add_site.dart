@@ -195,21 +195,6 @@ class _AddSiteState extends State<AddSite> {
                       ),
                     ),
                   },
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all<Size>(
-                        const Size(250, 40),
-                      ),
-                      elevation: MaterialStateProperty.all<double?>(3),
-                    ),
-                    onPressed: () {
-                      const Text("hello");
-                    },
-                    child: const Text(
-                      "Use Current Location",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
                   const SizedBox(
                     height: 30,
                   ),
