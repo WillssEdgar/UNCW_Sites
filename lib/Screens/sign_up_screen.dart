@@ -59,7 +59,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(55, 110, 55, 110),
+              padding: const EdgeInsets.fromLTRB(55, 10, 55, 10),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
