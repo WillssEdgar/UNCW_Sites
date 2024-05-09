@@ -23,6 +23,8 @@ class _AddSiteState extends State<AddSite> {
   String? imageFile;
   final userID = FirebaseAuth.instance.currentUser?.uid ?? '';
   late LatLng location;
+  String? errorMessage;
+  bool isSubmitted = false;
 
   var storageRef = FirebaseStorage.instance.ref();
 
@@ -52,6 +54,20 @@ class _AddSiteState extends State<AddSite> {
   }
 
   void _submitbutton() async {
+    if (imageFile == null ||
+        locationName == null ||
+        locationDescription == null) {
+      setState(() {
+        errorMessage = "Please fill out all fields.";
+      });
+      return;
+    } else {
+      setState(() {
+        errorMessage = null;
+        isSubmitted = true;
+      });
+    }
+
     CollectionReference sitesRef =
         FirebaseFirestore.instance.collection('Sites');
     CollectionReference userRef = FirebaseFirestore.instance
@@ -303,6 +319,7 @@ class _AddSiteState extends State<AddSite> {
                           style: TextStyle(fontSize: 18),
                         ),
                       ),
+                      _getMessageWidget(),
                     ],
                   )
                 ],
@@ -312,5 +329,27 @@ class _AddSiteState extends State<AddSite> {
         ],
       ),
     );
+  }
+
+  Widget _getMessageWidget() {
+    if (errorMessage != null && errorMessage!.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          errorMessage!,
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
+    } else if (isSubmitted) {
+      return const Padding(
+        padding: EdgeInsets.only(top: 8.0),
+        child: Text(
+          "Site Submitted!",
+          style: TextStyle(color: Colors.green),
+        ),
+      );
+    } else {
+      return Container(); // Return an empty container when nothing should be displayed
+    }
   }
 }
