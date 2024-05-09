@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
@@ -25,6 +26,7 @@ class _AddSiteState extends State<AddSite> {
   late LatLng location;
   String? errorMessage;
   bool isSubmitted = false;
+  bool isLoading = false;
 
   var storageRef = FirebaseStorage.instance.ref();
 
@@ -54,6 +56,10 @@ class _AddSiteState extends State<AddSite> {
   }
 
   void _submitbutton() async {
+    setState(() {
+      isLoading = true;
+    });
+
     if (imageFile == null ||
         locationName == null ||
         locationDescription == null) {
@@ -65,6 +71,7 @@ class _AddSiteState extends State<AddSite> {
       setState(() {
         errorMessage = null;
         isSubmitted = true;
+        isLoading = false;
       });
     }
 
@@ -290,18 +297,37 @@ class _AddSiteState extends State<AddSite> {
                   },
                   Column(
                     children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          minimumSize: MaterialStateProperty.all<Size>(
-                              const Size(125, 40)),
-                          elevation: MaterialStateProperty.all<double?>(3),
-                        ),
-                        onPressed: () {
-                          _submitbutton();
-                        },
-                        child: const Text(
-                          "Submit Site",
-                          style: TextStyle(fontSize: 18),
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: isLoading
+                            ? 150
+                            : 150, // Animate width based on isLoading
+                        height: 50, // Fixed height for consistency
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all<Size>(
+                                const Size.fromHeight(50)),
+                            elevation: MaterialStateProperty.all<double?>(3),
+                            backgroundColor:
+                                MaterialStateProperty.resolveWith<Color>(
+                                    (Set<MaterialState> states) {
+                              if (states.contains(MaterialState.pressed)) {
+                                return Colors.grey[800]!;
+                              } // Color when button is pressed
+                              else if (states
+                                  .contains(MaterialState.disabled)) {
+                                return Colors.grey;
+                              } // Color when button is disabled
+                              return Theme.of(context)
+                                  .secondaryHeaderColor; // Default color
+                            }),
+                          ),
+                          onPressed: isLoading ? null : _submitbutton,
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
+                              : const Text("Submit Site",
+                                  style: TextStyle(fontSize: 18)),
                         ),
                       ),
                       _getMessageWidget(),
